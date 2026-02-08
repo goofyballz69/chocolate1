@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baking for Bhaturi 🍫</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #efebe9; /* Creamy background */
+            font-family: 'Fredoka One', cursive;
+            overflow: hidden;
+            user-select: none;
+            box-sizing: border-box;
+        }
+
+        /* --- BACKGROUND DECOR --- */
+        .bg-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: radial-gradient(#d7ccc8 15%, transparent 16%),
+                              radial-gradient(#d7ccc8 15%, transparent 16%);
+            background-size: 60px 60px;
+            background-position: 0 0, 30px 30px;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        h1 {
+            color: #5d4037;
+            font-size: 2em;
+            text-align: center;
+            margin: 0 0 10px 0;
+            text-shadow: 2px 2px 0px #fff;
+        }
+
+        p.subtitle {
+            color: #8d6e63;
+            margin-bottom: 30px;
+            font-family: sans-serif;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        /* --- STAGE CONTAINERS --- */
+        #kitchen-stage, #final-result {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+        }
+        #final-result { display: none; } /* Hidden initially */
+
+        /* --- KITCHEN AREA --- */
+        .kitchen-counter {
+            position: relative;
+            width: 100%;
+            max-width: 350px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        /* The Mixing Bowl */
+        .bowl-container {
+            position: relative;
+            width: 200px;
+            height: 120px;
+            z-index: 5;
+            transition: transform 0.2s;
+        }
+
+        .bowl {
+            width: 100%;
+            height: 100%;
+            background: #a1887f;
+            border-radius: 0 0 100px 100px;
+            border: 4px solid #5d4037;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Mixture inside bowl */
+        .mixture {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 0%;
+            background-color: #3e2723; /* Dark Chocolate */
+            transition: height 0.5s ease;
+        }
+        .mixture::after {
+            content: ''; position: absolute; top: 10px; left: 20px;
+            width: 10px; height: 10px; background: rgba(255,255,255,0.1); border-radius: 50%;
+            box-shadow: 30px 20px 0 rgba(255,255,255,0.1), 80px 10px 0 rgba(255,255,255,0.1);
+        }
+
+        /* --- INGREDIENTS SHELF (ALIGNED) --- */
+        .ingredients-shelf {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center; /* Center align ingredients */
+            flex-wrap: wrap;
+            gap: 15px; /* Consistent spacing */
+            padding-bottom: 20px;
+        }
+
+        .ingredient {
+            width: 60px; height: 60px; background: white; border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            align-items: center; justify-content: center; cursor: pointer;
+            transition: transform 0.2s, opacity 0.3s; font-size: 24px;
+        }
+
+        .ingredient:hover { transform: scale(1.1) rotate(5deg); }
+        .ingredient span { font-size: 10px; color: #5d4037; margin-top: 2px; font-family: sans-serif; }
+        .ingredient.added { opacity: 0; pointer-events: none; transform: scale(0); }
+        
+        .shake { animation: shakeBowl 0.4s ease-in-out; }
+        @keyframes shakeBowl {
+            0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); }
+        }
+
+        /* --- OVEN BUTTON (ALIGNED) --- */
+        #oven-btn {
+            /* Auto margins for perfect centering when display:block */
+            margin: 20px auto 0 auto; 
+            padding: 15px 40px; background: #e91e63; color: white;
+            border: none; border-radius: 30px; font-size: 1.2rem; font-family: 'Fredoka One', cursive;
+            cursor: pointer; box-shadow: 0 5px 15px rgba(233,30,99,0.3); display: none;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        /* --- FINAL CAKE REVEAL --- */
+        #final-result {
+            text-align: center; animation: popUp 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        @keyframes popUp { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .cake-container {
+            position: relative;
+            width: 280px;
+            height: 280px;
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+        }
+        
+        /* FIXED: Reliable Cake Image URL */
+        .cake-img { 
+            width: 100%; 
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 15px 15px rgba(0,0,0,0.3));
+        }
+
+        /* Steam Animation */
+        .steam-container {
+            position: absolute;
+            top: -30px; left: 50%; transform: translateX(-50%);
+            width: 100px; height: 100px;
+            z-index: 5; pointer-events: none;
+        }
+
+        .steam {
+            position: absolute; bottom: 0; left: 50%;
+            width: 25px; height: 50px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%; filter: blur(8px);
+            opacity: 0; animation: riseAndFade 3s infinite ease-in;
+        }
+        .steam:nth-child(2) { animation-delay: 0.7s; left: 40%; height: 40px; }
+        .steam:nth-child(3) { animation-delay: 1.5s; left: 60%; height: 55px;}
+
+        @keyframes riseAndFade {
+            0% { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.5); }
+            40% { opacity: 0.7; }
+            100% { opacity: 0; transform: translateX(calc(-50% + 15px)) translateY(-120px) scale(1.5); }
+        }
+
+        .cake-topper {
+            position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+            background: #fff; padding: 5px 15px; border-radius: 10px;
+            border: 2px solid #e91e63; color: #e91e63; font-family: 'Pacifico', cursive;
+            font-size: 1.2rem; white-space: nowrap; box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            z-index: 10;
+        }
+        .cake-topper::after {
+            content: ''; position: absolute; bottom: -25px; left: 50%; width: 3px; height: 25px; background: #ccc;
+            z-index: -1;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-pattern"></div>
+
+    <div id="kitchen-stage">
+        <h1>Let's make something sweet! 🍫</h1>
+        <p class="subtitle">Add all the special ingredients to the bowl.</p>
+
+        <div class="kitchen-counter">
+            <div class="ingredients-shelf">
+                <div class="ingredient" onclick="addIngredient(this)">🍫 <span>Cocoa</span></div>
+                <div class="ingredient" onclick="addIngredient(this)">❤️ <span>Love</span></div>
+                <div class="ingredient" onclick="addIngredient(this)">🧸 <span>Cuddles</span></div>
+                <div class="ingredient" onclick="addIngredient(this)">🍯 <span>Sugar</span></div>
+                <div class="ingredient" onclick="addIngredient(this)">🤝 <span>Trust</span></div>
+            </div>
+
+            <div class="bowl-container" id="bowl">
+                <div class="bowl">
+                    <div class="mixture" id="mixture"></div>
+                </div>
+            </div>
+        </div>
+
+        <button id="oven-btn" onclick="bakeCake()">🔥 BAKE IT! 🔥</button>
+    </div>
+
+    <div id="final-result">
+        <h1>Happy Chocolate Day!</h1>
+        <div class="cake-container">
+            <div class="cake-topper">For my Bhaturi ❤️</div>
+            
+            <div class="steam-container">
+                <span class="steam"></span>
+                <span class="steam"></span>
+                <span class="steam"></span>
+            </div>
+
+            <img src="https://cdn-icons-png.flaticon.com/512/2682/2682455.png" alt="Delicious Chocolate Cake" class="cake-img">
+        </div>
+        <p style="color: #5d4037; margin-top: 30px; font-size: 1.2rem; font-family: sans-serif;">You are sweeter than any chocolate!</p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        let ingredientsAdded = 0;
+        const totalIngredients = 5;
+        const mixture = document.getElementById('mixture');
+        const bowl = document.getElementById('bowl');
+        const ovenBtn = document.getElementById('oven-btn');
+
+        function addIngredient(element) {
+            if (element.classList.contains('added')) return;
+            element.classList.add('added');
+            ingredientsAdded++;
+            
+            bowl.classList.remove('shake');
+            void bowl.offsetWidth; // Trigger reflow
+            bowl.classList.add('shake');
+
+            const fillLevel = (ingredientsAdded / totalIngredients) * 100;
+            mixture.style.height = fillLevel + '%';
+
+            if (ingredientsAdded === totalIngredients) {
+                setTimeout(() => { ovenBtn.style.display = 'block'; }, 500);
+            }
+        }
+
+        function bakeCake() {
+            document.getElementById('kitchen-stage').style.display = 'none';
+            document.getElementById('final-result').style.display = 'flex';
+            fireConfetti();
+        }
+
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) return clearInterval(interval);
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+    </script>
+</body>
+</html>
